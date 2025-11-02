@@ -8,9 +8,8 @@ import textwrap
 
 pygame.init()
 
-# ----------------------------
-#  Game window and basic configuration
-# ----------------------------
+
+# Game window and basic configuration
 WIDTH, HEIGHT = 1000, 700
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("1v1 Texas Duel")
@@ -30,9 +29,8 @@ YELLOW = (255, 210, 0)
 CARD_W, CARD_H = 70, 100
 CARD_GAP = 12
 
-# ----------------------------
+
 # Load the icon
-# ----------------------------
 def load_icon(name):
     path = os.path.join(os.path.dirname(__file__), name)
     img = pygame.image.load(path).convert_alpha()
@@ -50,9 +48,8 @@ RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A']
 RANK_VALUE = {r:i for i,r in enumerate(RANKS, start=2)}
 VALUE_TO_RANK = {v:r for r,v in RANK_VALUE.items()}
 
-# ----------------------------
+
 # Card and card type evaluation module
-# ----------------------------
 class Card:
     def __init__(self, rank, suit):
         self.rank = rank
@@ -86,7 +83,6 @@ def evaluate5(cards5):
     is_flush = len(set(c.suit for c in cards5)) == 1
     uniq = sorted(set(ranks), reverse=True)
     is_straight = len(uniq) == 5 and max(uniq) - min(uniq) == 4
-    # 特殊情况：A-2-3-4-5
     if set([14,5,4,3,2]).issubset(set(ranks)):
         is_straight, top = True, 5
     else:
@@ -140,7 +136,7 @@ class Player:
 
 class Game:
     def __init__(self):
-        # 状态控制：welcome → dice → playing → result
+        # welcome → dice → playing → result
         self.state = "welcome"
         self.deck = Deck()
         self.p1 = Player("Player 1", True)
@@ -156,7 +152,6 @@ class Game:
         self.p2_rank = "" # Computer card type
         self.result_winner = None # Winner name
         self.result_net_gain = 0
-        # 骰子机制
         self.dice_p1 = 0
         self.dice_p2 = 0
         self.dice_ready = False
@@ -165,7 +160,6 @@ class Game:
 
         self.log = []
         self.rules_visible = False
-        # 弹窗
         self.popup_msg = None
         self.popup_start = 0.0
 
@@ -179,9 +173,7 @@ class Game:
         self.first_player = 0 if self.dice_p1 > self.dice_p2 else 1
         return True
 
-    # ----------------------------
-    # ♠ 新一局开始
-    # ----------------------------
+
     def new_hand(self):
         self.deck = Deck() # Two cards in each hand
         self.p1.hand = self.deck.draw(2)
@@ -224,7 +216,7 @@ class Game:
             cpu.folded = True
             return "Computer folds (low chips)"
 
-        # ---  Calculate the currently visible card ---
+        #Calculate the currently visible card
         visible_cards = cpu.hand + self.board[:self.revealed]
         rank_tuple = evaluate_best5(visible_cards + [Card('2', '♠')] * (7 - len(visible_cards))) if len(
             visible_cards) < 5 else evaluate_best5(visible_cards)
@@ -549,7 +541,7 @@ def main():
                             game.popup_msg = "某方筹码不足，已重置为100"
                             game.popup_start = time.time()
                             game.p1.chips = game.p2.chips = 100
-                        game.state = "dice"  # 新一局
+                        game.state = "dice"  # new round
                     elif quit_btn.collidepoint(mx,my):
                         pygame.quit(); sys.exit()
 
@@ -651,9 +643,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
